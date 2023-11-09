@@ -2,7 +2,10 @@
 
 1. Go to AWS website and login to your account 
 2. Click 'EC2' (Elastic Cloud Computing) service icon 
+        ![1](https://github.com/filipdomkc/Apache-Kafka---Python/assets/68906633/7e5be3f1-6268-4785-94d6-1eae9c6654ba)
 3. Click Launch Instance, and select Free Tier eligable options. Also you should create ( or customize) security groups to allow SSH and TCP from anywhere
+        ![2](https://github.com/filipdomkc/Apache-Kafka---Python/assets/68906633/7ebdf90a-5dd9-4ec3-b052-6a5d6140f29e)
+        ![3](https://github.com/filipdomkc/Apache-Kafka---Python/assets/68906633/f0dd848a-b1bb-4919-8372-8e9196321ffc)
 4. Click Launch Instance and wait until your instance state is 'Running'
 5. Copy your public IPv4 address and use Putty (or some similar software) to login into your AWS Linux instance
 6. Once you have logged in follow this steps  to set up Kafka on your EC2 instance:
@@ -54,7 +57,10 @@
 
         bin/kafka-console-consumer.sh --topic demo_test --bootstrap-server [your-server-public-IPv4:9092] --partition 0
 
-18. Now you can start writing messages to producer console and see those messages on consumer console.
+18. Now you can start writing messages to producer console and see those messages on consumer console:
+
+        ![4](https://github.com/filipdomkc/Apache-Kafka---Python/assets/68906633/e3e941c1-eb7c-4abc-a67a-8ba64ac09621)
+
 
 
 
