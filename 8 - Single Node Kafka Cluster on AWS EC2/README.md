@@ -63,8 +63,8 @@
         bin/kafka-console-consumer.sh --topic demo_test --bootstrap-server [your-server-public-IPv4:9092] --partition 0
 
 19. Now you can start writing messages to producer console and see those messages on consumer console:
+![4](https://github.com/filipdomkc/Apache-Kafka---Python/assets/68906633/b0a6992b-b31a-4418-89bc-2c32565d30bf)
 
-    ![4](https://github.com/filipdomkc/Apache-Kafka---Python/assets/68906633/e3e941c1-eb7c-4abc-a67a-8ba64ac09621)
 
 
 
