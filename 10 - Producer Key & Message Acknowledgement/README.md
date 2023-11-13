@@ -47,14 +47,17 @@ On the image below you can se how consumer does not print out "key" but only val
 ![Alt text](image.png)
 
 Now, when you go to the your kafka_logs directory you can see that your server have 2 folders for message-keys topic ( remember that we created topic with 2 partitions ):
+
 ![Alt text](image-1.png)
 
 When we go inside 1st partitoin (message-keys-0) and into log file we can see:
+
 ![Alt text](image-2.png)
 
 Two data points that have same key value ("2") are stored on the same partiton, in a sequence order they were produced in.
 
 Also, when we go into 2nd partition directory (message-keys-1) and into a log file:
+
 ![Alt text](image-3.png)
 
 Messages with key values "1" and "3" (Mercedes and Audi respectively) are stored in 2nd partition, and every future message with key value of "1" or "3" will always be stored also. 
@@ -70,13 +73,14 @@ ache Kafka is crucial for ensuring the reliability of message delivery between K
 **2. Acknowledgment Settings**
     Producers can configure the level of acknowledgment they require from Kafka brokers regarding the sent messages. There are three acknowledgment modes:
 
-        1. **acks=0** (No acknowledgment): The producer doesn’t wait for any acknowledgment. It sends the message and doesn’t care if it’s received. This means that if broker goes offline or an exception happens and the broker did not receive the message, the producer will not know about it and the messages will be lost.
+   1. **acks=0** (No acknowledgment): The producer doesn’t wait for any acknowledgment. It sends the message and doesn’t care if it’s received. This means that if broker goes offline or an exception happens and the broker did not receive the message, the producer will not know about it and the messages will be lost.
         ![Alt text](image-4.png)
 
-        2. **acks=1** (Leader acknowledgment): The producer waits for an acknowledgment from the leader broker of the topic partition where the message is sent. This means the message is considered sent once the leader broker confirms receipt (success response). If the message cant be written to the leader (the leader crashed and a new leader was not elected yet) the producer will receive an error response and can retry sendting the message, avoiding potential data loss.
+   
+   2. **acks=1** (Leader acknowledgment): The producer waits for an acknowledgment from the leader broker of the topic partition where the message is sent. This means the message is considered sent once the leader broker confirms receipt (success response). If the message cant be written to the leader (the leader crashed and a new leader was not elected yet) the producer will receive an error response and can retry sendting the message, avoiding potential data loss.
         ![Alt text](image-5.png)
 
-        3. **acks=all** (Replica acknowledgment): The producer waits for acknowledgment from all in-sync replicas of the partition. This provides the highest level of durability and safety but can introduce more latency.
+   3. **acks=all** (Replica acknowledgment): The producer waits for acknowledgment from all in-sync replicas of the partition. This provides the highest level of durability and safety but can introduce more latency.
         ![Alt text](image-6.png)
 
         __acks=all must be used in conjunction with **min.insync.replicas**. It is a broker and topic setting. If you set up the broker level, you can override it at the topic level. So, the most common setting for min.insync.replicas is:
@@ -95,9 +99,9 @@ ache Kafka is crucial for ensuring the reliability of message delivery between K
 **5. Producer Receives Acknowledgment**
     The producer, based on the acknowledgment mode chosen, receives an acknowledgment once the required condition is met:
 
-        1. For “acks=0,” it receives no acknowledgment.
-        2. For “acks=1,” it receives an acknowledgment from the leader broker.
-        3. For “acks=all,” it receives an acknowledgment only after all in-sync replicas have replicated the message.
+   1. For “acks=0,” it receives no acknowledgment.
+   2. For “acks=1,” it receives an acknowledgment from the leader broker.
+   3. For “acks=all,” it receives an acknowledgment only after all in-sync replicas have replicated the message.
 
 **6. Retries and Error Handling**
     If the producer doesn’t receive the acknowledgment within a specified timeout or encounters an error, it can retry the message transmission according to its configured retry settings.
