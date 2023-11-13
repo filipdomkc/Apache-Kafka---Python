@@ -6,7 +6,7 @@ The basic storage unit of Kafka is a partition replica. When you create a topic,
 
 Kafka brokers splits each partition into __segments__. Each segment is stored in a single data file on the disk attached to the broker. By default, each segment contains either 1 GB of data or a week of data, whichever limit is attained first. When the Kafka broker receives data for a partition, as the segment limit is reached, it will close the file and start a new one:
 
-![Alt text](image.png)
+![image.png](https://raw.githubusercontent.com/filipdomkc/Apache-Kafka---Python/main/9%20-%20Kafka%20Log%20Segments%20In%20Depth/image.png)
 
 Only one segment is ACTIVE at any point in time - the one data is being written to. A segment can only be deleted if it has been closed beforehand. The size of a segment is controlled by two Broker configurations (which can be modified at the topic level too):
 
@@ -34,7 +34,7 @@ Start zookeeper, start server, create topic, start producer (which will be our p
 Now start producer --> main.py script. It will generate 100 data points.
 Go to Kafka_logs directory. What we can see is that  we have 9 log files ( 9 log segments) each 1KB in size (which is 1000bytes as we specified in server.properties file):
 
-![Alt text](image-1.png)
+![Alt text](https://raw.githubusercontent.com/filipdomkc/Apache-Kafka---Python/main/9%20-%20Kafka%20Log%20Segments%20In%20Depth/image-1.png)
 
 Each log segment contains 12 numbers from producer. Here is how 00000000000000000000.log looks like:
 
