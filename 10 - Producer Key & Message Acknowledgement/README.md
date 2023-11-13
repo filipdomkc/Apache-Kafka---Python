@@ -11,36 +11,41 @@ NOTE: It's important to note that round-robin distribution does not consider any
 
 __To enable sending full key-value pairs, from command line, we need to use two properties as below:__
 
-    1. __parse.key__ - default is false, if it is true then message key is required
-    2. __key.separator__ 
+1. __parse.key__ - default is false, if it is true then message key is required
+2. __key.separator__ 
 
 To test what we just learned we will create new kafka cluster with 2 partition topic , start server (broker), producer and consumer and see how Kafka distributes data based on __Message Key__ values.
 
 1. Start Kafka Zookeper with:
-     kafka_2.12-3.6.0\bin\windows\zookeeper-server-start.bat  kafka_2.12-3.6.0\config\zookeeper.properties
+     
+        kafka_2.12-3.6.0\bin\windows\zookeeper-server-start.bat  kafka_2.12-3.6.0\config\zookeeper.properties
 
 2. Start Kafka broker:
-    kafka_2.12-3.6.0\bin\windows\kafka-server-start.bat kafka_2.12-3.6.0\config\server.properties 
+    
+        kafka_2.12-3.6.0\bin\windows\kafka-server-start.bat kafka_2.12-3.6.0\config\server.properties 
 
 3. Create topic:
-    kafka_2.12-3.6.0/bin/windows/kafka-topics.bat --create --topic message-keys --bootstrap-server localhost:9092 --replication-factor 1 --partitions 2
+    
+        kafka_2.12-3.6.0/bin/windows/kafka-topics.bat --create --topic message-keys --bootstrap-server localhost:9092 --replication-factor 1 --partitions 2
 
 4. Start producer with enabled key-value pairs:
-    kafka_2.12-3.6.0/bin/windows/kafka-console-producer.bat --bootstrap-server localhost:9092 --property "parse.key=true" --property "key.separator=:" --topic message-keys 
+    
+        kafka_2.12-3.6.0/bin/windows/kafka-console-producer.bat --bootstrap-server localhost:9092 --property "parse.key=true" --property "key.separator=:" --topic message-keys 
 
 5. Lastly, start a consumer:
-    kafka_2.12-3.6.0/bin/windows/kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic message-keys
+    
+        kafka_2.12-3.6.0/bin/windows/kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic message-keys
 
 Now write this messages to your producer console (key separator is set to ":" , so term on the left of ":" is acting like key and term ond the right of ":" is acting like value - in our case comma separated value csv ):
 
-1:"Mercerses, A-Class"
-2:"BMW, 5 Series"
-3:"Audi, A4"
-1:"Mercedes, S-Class"
-3:"Audi, A3"
-3:"Audi, A6"
-1:"Mercedes, E-Class"
-2:"BMW, 3 Series"
+    1:"Mercerses, A-Class"
+    2:"BMW, 5 Series"
+    3:"Audi, A4"
+    1:"Mercedes, S-Class"
+    3:"Audi, A3"
+    3:"Audi, A6"
+    1:"Mercedes, E-Class"
+    2:"BMW, 3 Series"
 
 On the image below you can se how consumer does not print out "key" but only value. Also you cen see error when you try to pass data without separator ("KAFKA PRODUCER" tab):
 
@@ -74,21 +79,25 @@ ache Kafka is crucial for ensuring the reliability of message delivery between K
     Producers can configure the level of acknowledgment they require from Kafka brokers regarding the sent messages. There are three acknowledgment modes:
 
    1. **acks=0** (No acknowledgment): The producer doesn’t wait for any acknowledgment. It sends the message and doesn’t care if it’s received. This means that if broker goes offline or an exception happens and the broker did not receive the message, the producer will not know about it and the messages will be lost.
-        ![Alt text](image-4.png)
+        
+![image-4.png](https://github.com/filipdomkc/Apache-Kafka---Python/blob/main/10%20-%20Producer%20Key%20%26%20Message%20Acknowledgement/image-4.png)
 
    
    2. **acks=1** (Leader acknowledgment): The producer waits for an acknowledgment from the leader broker of the topic partition where the message is sent. This means the message is considered sent once the leader broker confirms receipt (success response). If the message cant be written to the leader (the leader crashed and a new leader was not elected yet) the producer will receive an error response and can retry sendting the message, avoiding potential data loss.
-        ![Alt text](image-5.png)
+        
+[![Alt text](image-5.png)](https://github.com/filipdomkc/Apache-Kafka---Python/blob/main/10%20-%20Producer%20Key%20%26%20Message%20Acknowledgement/image-5.png)
 
    3. **acks=all** (Replica acknowledgment): The producer waits for acknowledgment from all in-sync replicas of the partition. This provides the highest level of durability and safety but can introduce more latency.
-        ![Alt text](image-6.png)
+        
+[![Alt text](image-6.png)](https://github.com/filipdomkc/Apache-Kafka---Python/blob/main/10%20-%20Producer%20Key%20%26%20Message%20Acknowledgement/image-6.png)
 
-        __acks=all must be used in conjunction with **min.insync.replicas**. It is a broker and topic setting. If you set up the broker level, you can override it at the topic level. So, the most common setting for min.insync.replicas is:
+***acks=all** must be used in conjunction with **min.insync.replicas**. It is a broker and topic setting. If you set up the broker level, you can override it at the topic level. So, the most common setting for min.insync.replicas is:*
             '''
             min.insync.replicas=2
         
-        That means that at least two brokers that are insync replicas, including the leader, must respond that they have the data. Otherwise, you’ll get an error message. So, that means that if you use **replication.factor=3, min.insync.replica=2, and acks=all**, you can only tolerate one broker going down. Otherwise, the producer will receive an exception on Send. Here is a diagram to understand this concept.
-        ![Alt text](image-7.png)
+That means that at least two brokers that are insync replicas, including the leader, must respond that they have the data. Otherwise, you’ll get an error message. So, that means that if you use **replication.factor=3, min.insync.replica=2, and acks=all**, you can only tolerate one broker going down. Otherwise, the producer will receive an exception on Send. Here is a diagram to understand this concept.
+        
+[![Alt text](image-7.png)](https://github.com/filipdomkc/Apache-Kafka---Python/blob/main/10%20-%20Producer%20Key%20%26%20Message%20Acknowledgement/image-7.png)
 
 **3. Broker Receives the Message**
     The Kafka broker responsible for the topic’s partition receives the message from the producer. If the acknowledgment mode is set to 0 or 1, the broker immediately acknowledges the receipt to the producer. In cases where acknowledgment mode is set to “acks=all,” the leader broker forwards the message to the in-sync replicas (ISR) of the partition. These replicas replicate the message to ensure durability.
@@ -99,9 +108,9 @@ ache Kafka is crucial for ensuring the reliability of message delivery between K
 **5. Producer Receives Acknowledgment**
     The producer, based on the acknowledgment mode chosen, receives an acknowledgment once the required condition is met:
 
-   1. For “acks=0,” it receives no acknowledgment.
-   2. For “acks=1,” it receives an acknowledgment from the leader broker.
-   3. For “acks=all,” it receives an acknowledgment only after all in-sync replicas have replicated the message.
+   1. For *“acks=0”* it receives no acknowledgment.
+   2. For *“acks=1”* it receives an acknowledgment from the leader broker.
+   3. For *“acks=all”* it receives an acknowledgment only after all in-sync replicas have replicated the message.
 
 **6. Retries and Error Handling**
     If the producer doesn’t receive the acknowledgment within a specified timeout or encounters an error, it can retry the message transmission according to its configured retry settings.
