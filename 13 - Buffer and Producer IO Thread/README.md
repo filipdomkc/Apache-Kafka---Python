@@ -19,10 +19,13 @@ Lets explores some of batch and I/O thread configuration options:
 **BATCHING**
 
    *batch.size* - This configuration controls the default batch size in bytes. The producer will attempt to batch multiple records together into fewer requests that are being sent to the same partition.
+   
    *linger.ms* - Instead of sending a record as soon as possible, the producer will wait for linger.ms time before sending the record. This allows multiple records to be batched together. If linger.ms = 0 (it is default in Kafka), then as soon as one message comes into buffer it is send to Kafka Cluster (we are not allowing buffer to accumulate messages into buffer). That is what we would expect but if I/O Thread is not available (it is writing some previous message to Kafka Cluster), messages still get accumulated into buffer.
 
 Batch request will be sent to the broker based on the following scenarios: 
+   
    1) if batch.size worth of records arrive then a batch request will be sent. 
+   
    2) if batch.size worth of records are yet to accumulate , then it will linger for a specified amount of time for more records to shows up.
 
 Also, batching and lingering can increase the latency of the record sent but can reduce the number of requests to the broker.
@@ -82,6 +85,7 @@ We can see that producer created 1000 records (0-999), but consumer consumed onl
 Messages are very small in our example, so obviously buffer.memory (default is 32MB, and default is also linger.ms=0 --> no micro batching is allowed) is not exceeded and .send() method was not blocked. We are rapidly writting messages to buffer and I/0 thread is writing messages to Kafka cluster with a delay (because it takes time to write message to Kafka Cluster). So what happened is that some messages got accumulated into buffer. When our producer code is done, we are coming out of that code (because we are done), and some messages got trapped inside buffer. What we should do?
 
 We should add 2 more properties, which are very important:
+
 *producer.flush()* - This method is used to ensure that all records/messages sent by the producer are actually sent to the Kafka broker. It forces any outstanding messages in the producer's buffer to be sent to the broker immediately.
 
 *producer.close()* - This method is used to close the producer. It is important to call close() before exiting your application to ensure that all resources used by the producer are properly released. This includes closing network connections to the Kafka brokers and releasing any resources associated with the producer. If you don't close the producer, it may lead to resource leaks. The producer might not be able to release network connections and other resources properly, which can have negative impacts on the performance and stability of your application.
