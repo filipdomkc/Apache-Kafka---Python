@@ -7,9 +7,11 @@ There are three primary methods of sending messages:
 **3. Asynchronous send**
 
 **FIRE-AND-FORGET**
+
 We send a message to the server and don't really care if it arrives successfully or not. Most of the time, it will arive sucessfully, since Kafka is highly available and the producer will retry sending messages automatically. However, some messages will get lost using this method
 
 *example for Fire-and-forget*
+
 Start Zookeeper:
 
     kafka_2.12-3.6.0\bin\windows\zookeeper-server-start.bat  kafka_2.12-3.6.0\config\zookeeper.properties
@@ -53,9 +55,11 @@ After you start your producer script, wait until 40-50 records are produced and 
 Our Consumer is trying to reconnect to broker because our broker is down. In the meantime, our Producer is totally unaware of broker being down, it got to the end of the code without an error. Producer does not care if messages arrive to the destination successfully or not ('fire-n-forget'). Every message after record 43 is lost, because even if broker is up and running again, producer does not know that earlier messages has not been written to broker.
 
 **SYNCHRONOUS SEND**
+
 We send a message, the send() method returns a Future object, and we use get() to wait on the future and see if the send() was successful or not.
 
 *example for Synchronous-send*
+
 Start Zookeeper:
 
     kafka_2.12-3.6.0\bin\windows\zookeeper-server-start.bat  kafka_2.12-3.6.0\config\zookeeper.properties
@@ -107,10 +111,12 @@ Now, again terminate Kafka broker after 30-40 records are produced. We can see t
 Our producer client is getting notification that from record {'number':32}, producer is not able to send data to Kafka Cluster and after 10 seconds the Timeout error is thrown. We can store those notifications into log file and monitor when, why and which records failed. The biggest difference is that we are aware (as a Producer) of unsuccessful messages. The biggest disatvantage of this method is that producer will wait 10 seconds (actually based on timeout parameter value) for response and only after that period it will go on the next record. This method is slow and time-consuming.
 
 **ASYNCHRONOUS SEND**
+
 Suppose the network roundtrip time between our application and the Kafka cluster is 10ms. If we wait for a reply after sending each message, sending 100 messages will take around 1 second. On the other hand, if we send all our messages and not wait for any replies, then sending 100 messages will take barely any time at all. In most cases we really don't need a reply with topic, partition and offset af a record. But, what we do need to know is if and when  we failed to send message , throw an exception, log an error for later analysis.
 In order to send messages asynchronously and stil handle error scenarios, the producer supports adding a callback when sending a record.
 
 *example for Asynchronous-send*
+
 Start Zookeeper:
 
     kafka_2.12-3.6.0\bin\windows\zookeeper-server-start.bat  kafka_2.12-3.6.0\config\zookeeper.properties
