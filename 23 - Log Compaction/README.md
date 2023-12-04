@@ -11,21 +11,29 @@ In Kafka, data is stored in topics, and each topic is divided into partitions. E
 Let's consider a scenario where we have a topic named "user-activity" with the following records:
 
 Key: "user-1", Value: "login", Offset: 1
+
 Key: "user-2", Value: "logout", Offset: 2
+
 Key: "user-1", Value: "update-profile", Offset: 3
+
 Key: "user-3", Value: "login", Offset: 4
+
 After log compaction, the log would retain only the latest record for each key:
 
 Key: "user-2", Value: "logout", Offset: 2
+
 Key: "user-1", Value: "update-profile", Offset: 3
+
 Key: "user-3", Value: "login", Offset: 4
+
 In this example, only the latest records for each key are retained, and redundant records are removed during log compaction.
 
 **Configuring Log Compaction:**
 To enable log compaction for a topic, you need to set the cleanup.policy configuration to "compact" when creating the topic.
 
 For example, using the Kafka command line tools:
-```bin/kafka-topics.sh --create --topic user-activity --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1 --config cleanup.policy=compact
+```
+bin/kafka-topics.sh --create --topic user-activity --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1 --config cleanup.policy=compact
 ```
 
 **Use Cases:**
