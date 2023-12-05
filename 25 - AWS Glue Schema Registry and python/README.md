@@ -113,16 +113,19 @@ But our AVRO Serializer should register schema when sending data record for the 
 So now lets run our Kafka cluster.
 
 Start Kafka Zookeeper:
+
 '''
 kafka_2.12-3.6.0\bin\windows\zookeeper-server-start.bat  kafka_2.12-3.6.0\config\zookeeper.properties
 '''
 
 Start Broker (Server):
+
 '''
 kafka_2.12-3.6.0\bin\windows\kafka-server-start.bat kafka_2.12-3.6.0\config\server.properties 
 '''
 
 Create Topic:
+
 '''
 kafka_2.12-3.6.0/bin/windows/kafka-topics.bat --create --topic aws_glue_schema --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
 '''
